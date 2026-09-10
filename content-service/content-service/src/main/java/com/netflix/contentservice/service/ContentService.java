@@ -2,15 +2,16 @@ package com.netflix.contentservice.service;
 
 import com.netflix.contentservice.dto.MovieRequest;
 import com.netflix.contentservice.dto.MovieResponse;
+import com.netflix.contentservice.model.Genre;
 import com.netflix.contentservice.model.Movie;
 import com.netflix.contentservice.model.VideoStatus;
 import com.netflix.contentservice.repository.ContentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,6 +42,62 @@ public class ContentService {
 
     }
 
+    //Get all movies in the catalog
+    public List<MovieResponse> getAllMovies(){
+        return contentRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    //Get Movie by id
+    public MovieResponse getMoviesById(String movieId){
+       Movie movie = contentRepository.findById(movieId)
+               .orElseThrow(() -> new RuntimeException("Movie not found : " + movieId));
+       return mapToResponse(movie);
+    }
+
+    //get movies by genre
+    public List<MovieResponse> getMoviesByGenre(Genre genre){
+        return contentRepository.findByGenre(genre)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    //Search movies
+    public List<MovieResponse> searchMovies(String title){
+        return contentRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void updateKey(String movieId, String videoKey){
+        log.info("Updating VideoKey for Movie :{}" , movieId);
+        Movie movie = contentRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Movie Not Found" + movieId));
+        movie.setVideoKey(videoKey);
+        movie.setVideoStatus(VideoStatus.PENDING);
+        contentRepository.save(movie);
+
+    }
+
+    public void updateHlsUrl (String movieId, String hlsurl){
+        log.info("Updating HLS URL for movie :{}" , movieId);
+        Movie movie = contentRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Movie not Found :" + movieId));
+        movie.setHlsUrl(hlsurl);
+        movie.setVideoStatus(VideoStatus.READY);
+        contentRepository.save(movie);
+
+        log.info("Movie {} is now ready for Streaming ", movieId);
+    }
+
+
+
+
+
     private MovieResponse mapToResponse(Movie movie){
         MovieResponse response = new MovieResponse();
         response.setId(movie.getId());
@@ -62,3 +119,6 @@ public class ContentService {
     }
 
 }
+
+
+        //1.22

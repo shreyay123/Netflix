@@ -25,10 +25,12 @@ public class ContentController {
     //Add new movie to catalog
     @PostMapping
     public ResponseEntity<MovieResponse> addMovie(
-            @Valid @RequestBody MovieRequest movieRequest){
+            @Valid @RequestBody MovieRequest movieRequest) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ContentService.addMovie(movieRequest));
+                .body(contentService.addMovie(movieRequest));
     }
+
 
     //Get All movies
     @GetMapping
