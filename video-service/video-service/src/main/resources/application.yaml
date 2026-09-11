@@ -19,7 +19,7 @@ spring:
       secret-key: ${AWS_SECRET_KEY:your-secret-key}
       region: ${AWS_REGION:ap-south-1}
       s3:
-        bucket-name: ${AWS_BUCKET_NAME:abcdeg}
+        bucket-name: ${AWS_BUCKET_NAME:abcdbucket}
 
     management:
       endpoints:
