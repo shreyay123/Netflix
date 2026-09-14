@@ -43,9 +43,9 @@ ffmpeg:
 encoding:
   base-path: ${TEMP_DIR:/tmp/encoding}
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health,info
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
